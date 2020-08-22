@@ -16,3 +16,69 @@ order by rn asc;
 
 -------------------------------------
 
+Hierarchical Query a sample:-
+
+select ename,job, prior ename, level
+from emp
+start with mgr is null
+connect by  prior empno = mgr
+order by level;
+
+
+SELECT last_name, employee_id, manager_id, LEVEL
+      FROM employees
+      START WITH employee_id = 100
+      CONNECT BY PRIOR employee_id = manager_id
+      ORDER SIBLINGS BY last_name;
+
+
+
+ Link for all the related uses of connect by :- https://livesql.oracle.com/apex/livesql/file/tutorial_GQMLEEPG5ARVSIFGQRD3SES92.html     
+-----------------------------------------
+Recursive With an Example:-
+
+with org_chart (
+  employee_id, first_name, last_name, manager_id
+) as (
+  select employee_id, first_name, last_name, manager_id 
+  from   employees
+  where  manager_id is null
+  union  all
+  select e.employee_id, e.first_name, e.last_name, e.manager_id 
+  from   org_chart oc
+  join   employees e
+  on     e.manager_id = oc.employee_id
+)
+  select * from org_chart;
+
+with org_chart (
+  employee_id, first_name, last_name, hire_date, manager_id, lvl
+) as (
+  select employee_id, first_name, last_name, hire_date, manager_id, 1 lvl
+  from   employees
+  where  manager_id is null
+  union  all
+  select e.employee_id, e.first_name, e.last_name, e.hire_date, e.manager_id, oc.lvl + 1
+  from   org_chart oc
+  join   employees e
+  on     e.manager_id = oc.employee_id
+) search breadth first by hire_date set hire_seq
+  select * from org_chart
+  order  by hire_seq;
+
+
+select employee_id, first_name, last_name, manager_id,
+       connect_by_root last_name,
+       sys_connect_by_path ( last_name, ', ') chart,
+       connect_by_isleaf is_leaf
+from   employees
+start with manager_id is null
+connect by prior employee_id = manager_id;
+
+
+-------------------------------------------
+
+
+
+
+--------------------------------------------
