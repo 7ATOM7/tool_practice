@@ -77,8 +77,65 @@ connect by prior employee_id = manager_id;
 
 
 -------------------------------------------
+What I practised post learning:-
 
+with roster(employee_id,last_name,manager_name) as 
+(
+select employee_id,last_name,null as manager_name
+from emp_details_view
+where manager_id is null
+union all
+select b.employee_id, b.last_name, a.last_name
+from roster a join emp_details_view b
+on 
+a.employee_id = b.manager_id
+)
+search depth first by last_name set seq cycle employee_id set looped to 'Y' default 'N'
+select *
+from roster;
 
 
 
 --------------------------------------------
+
+Another practice with extended data
+
+with roster(employee_id,last_name,manager_name,lvl) as 
+(
+select employee_id,last_name,null as manager_name,1
+from emp_details_view
+where manager_id is null
+union all
+select b.employee_id, b.last_name, a.last_name,a.lvl+1
+from roster a join emp_details_view b
+on 
+a.employee_id = b.manager_id
+)
+search depth first by employee_id set seq cycle employee_id set looped to 'Y' default 'N'
+select employee_id,last_name,manager_name,
+case
+when lead(lvl,1,0) over (order by seq)<=lvl
+then 'LEAF'
+else 'Inner'
+end node_info
+from roster;
+
+--------------------------------------------
+
+Print prime numbers till a number 
+
+select listagg(gg,',')
+from
+(select case 
+when mod(ll,2) = 0
+then ll
+else 0
+end gg
+from
+(select level as ll
+from dual
+connect by level < 10) a)b
+where b.gg!=0;
+
+
+-------------------------------------------
