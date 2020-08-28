@@ -139,3 +139,15 @@ where b.gg!=0;
 
 
 -------------------------------------------
+
+Leaf node or not , path to a node using connect by 
+
+
+select employee_id,last_name ,level,connect_by_isleaf as isleaf, connect_by_root last_name as croot, sys_connect_by_path(last_name,'/') as ehierarchy
+from employees
+start with manager_id is null
+connect by manager_id = prior employee_id;
+
+
+
+--------------------------------------------
