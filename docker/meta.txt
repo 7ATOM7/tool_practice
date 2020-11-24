@@ -1,0 +1,2 @@
+Docker is a containerisation engine plus deployment.
+Volumes : Better storage facility with docker api support and decoupled from a contianer as such. Mount a location from host system into a container.
